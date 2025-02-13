@@ -1,22 +1,25 @@
 public class Main {
     public static void main(String[] args) {
-        ZooShop shop = new ZooShop(5);
+        ZooShop shop = new ZooShop(10);
 
-        shop.addAnimal(new Animal("Рекс", 1, "Шпиц", 1000));
-        shop.addAnimal(new Animal("Мурка", 2, "Персидская", 800));
-        shop.addAnimal(new Animal("Кеша", 3, "Ара", 1500));
+        Animal cat = new Animal("Барсик", 3, "Сибірська", 500);
+        Animal dog = new Animal("Рекс", 5, "Німецька вівчарка", 1000);
 
-
-        shop.removeAnimal("Мурка");
+        shop.addAnimal(cat);
+        shop.addAnimal(dog);
 
         shop.displayAnimals();
 
-//        Animal found = shop.findAnimal("Кеша");
-//        if (found != null) {
-//            found.displayInfo();
-//        } else {
-//            System.out.println("Животное не найдено.");
-//        }
+        Customer customer = new Customer("Іван", 1200);
+        customer.displayInfo();
+
+        customer.buyAnimal(shop, "Рекс");
+        customer.displayInfo();
+
+        shop.displayAnimals();
+
+
+
     }
 }
 
@@ -25,6 +28,15 @@ class Animal {
     int age;
     String breed;
     int price;
+
+
+    public Animal(){
+        this.name = "Неизвестно";
+        this.age = 0;
+        this.breed = "Неизвестно";
+        this.price = 0;
+
+    }
 
     public Animal(String name, int age, String breed, int price) {
         this.name = name;
@@ -40,12 +52,12 @@ class Animal {
 }
 
 class ZooShop {
-    private Animal[] animals;
-    private int count;
+     Animal[] animals;
+     public static int count = 0;
 
     public ZooShop(int size) {
         this.animals = new Animal[size];
-        this.count = 0;
+
     }
 
     public void addAnimal(Animal animal) {
@@ -82,12 +94,61 @@ class ZooShop {
         }
     }
 
-    public Animal findAnimal(String name) {
+
+    public void displayAnimalInfo(String name) {
         for (int i = 0; i < count; i++) {
-            if (animals[i].name.equals(name)) {
-                return animals[i];
+            if (animals[i] != null && animals[i].name.equals(name)) {
+                animals[i].displayInfo();
+                return;
             }
         }
-        return null;
+        System.out.println("Животное не найдено.");
     }
+}
+
+class Customer{
+    String name;
+    int money;
+
+
+    public Customer(String name, int money){
+        this.name = name;
+        this.money = money;
+    }
+
+    public void displayInfo() {
+        System.out.println("Имя: " + name + ", Баланс: " + money);
+    }
+
+    public void buyAnimal(ZooShop shop, String animalName){
+
+        for (int i = 0; i < ZooShop.count; i++) {
+            if (shop.animals[i] != null && shop.animals[i].name.equals(animalName) && shop.animals[i].price <= money) {
+                money -= shop.animals[i].price;
+                for (int j = i; j < ZooShop.count - 1; j++) {
+                    shop.animals[j] = shop.animals[j + 1];
+
+                }
+                shop.animals[ZooShop.count - 1] = null;
+
+                System.out.println("Поздравляем! Вы успешно купили животное!");
+
+                ZooShop.count--;
+                return;
+            }else if (shop.animals[i].price > money){
+                System.out.println("Ошибка: У вас недостадочно денег");
+                return;
+
+            }else if (shop.animals[i] == null){
+                System.out.println("Извините магазин пуст");
+                return;
+            }else if (shop.animals[i].name.equals(animalName)){
+                System.out.println("Ошибка: Животного с таким именем не найдено");
+            }
+        }
+
+
+    }
+
+
 }
